@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class Job extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes ;
+
+    protected $fillable = ['title', 'location', 'salary', 'description', 'experience', 'category'];
 
     public static array $experience = ['entry', 'intermediate', 'senior'];
     public static array $category = [
@@ -32,10 +35,11 @@ class Job extends Model
         return $this->hasMany(JobApplication::class);
     }
 
-    public function hasUserApplied(Authenticatable|User|int $user):bool{
+    public function hasUserApplied(Authenticatable|User|int $user): bool
+    {
         return $this->where('id', $this->id)
             ->whereHas('jobApplications',
-                        fn($query) => $query->where('user_id', '=', $user->id ?? $user)
+                fn($query) => $query->where('user_id', '=', $user->id ?? $user)
             )->exists();
     }
 
@@ -45,8 +49,8 @@ class Job extends Model
             $query->where(function ($query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%')
                     ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhereHas('employer', function ($query) use ($search){
-                      $query->where('company_name', 'like', '%' . $search . '%');
+                    ->orWhereHas('employer', function ($query) use ($search) {
+                        $query->where('company_name', 'like', '%' . $search . '%');
                     });
             });
         })->when($filters['min_salary'] ?? null, function ($query, $minSalary) {
