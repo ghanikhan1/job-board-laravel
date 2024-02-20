@@ -21,8 +21,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('job_applications', function (Blueprint $table) {
-            $table->string('cv_path')->nullable();
-        });
+//        Schema::table('job_applications', function (Blueprint $table) {
+//            $table->string('cv_path')->nullable();
+//        });
+        if (!Schema::hasColumn('job_applications', 'cv_path')) {
+            Schema::table('job_applications', function (Blueprint $table) {
+                $table->string('cv_path')->nullable();
+            });
+        }
+
     }
 };

@@ -41,6 +41,6 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('employer')
         ->resource('my-job', \App\Http\Controllers\MyJobController::class)
-        ->only('index');
+        ->only('index', 'create', 'store', 'edit', 'update', 'destroy');
 });
 
